@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Street\App\model\User;
+use Street\App\Model\User;
 
 class UserTest extends TestCase
 {

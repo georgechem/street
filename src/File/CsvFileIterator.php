@@ -3,6 +3,7 @@
 namespace Street\App\File;
 
 use Iterator;
+use Street\App\Normalizers\BaseNormalizer;
 
 final class CsvFileIterator implements Iterator
 {
@@ -13,7 +14,6 @@ final class CsvFileIterator implements Iterator
     public function __construct(string $file)
     {
         $this->file = fopen($file, 'r');
-        print_r(gettype($this->file));
     }
 
     public function __destruct()
@@ -59,5 +59,17 @@ final class CsvFileIterator implements Iterator
 
         $this->key++;
     }
+
+    public function addDataNormalizer(BaseNormalizer $normalizer): void
+    {
+        foreach ($this as $row){
+            if(is_array($row)){
+                if(count($row) > 0){
+                    $normalizer->addData($row[0]);
+                }
+            }
+        }
+    }
+
 }
 
