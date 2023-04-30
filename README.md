@@ -2,9 +2,8 @@
 > composer install
 # RUN
 
-> php ./src/index.php
+> composer start
 
 OR Alternatively
 
-> composer start
-
+> php ./src/index.php

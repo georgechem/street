@@ -15,7 +15,6 @@ $csv_file_iterator->addDataNormalizer($csv_normalizer);
 $csv_normalizer->normalize();
 
 $user_normalizer = new UserNormalizer();
-
 foreach ($csv_normalizer->getData() as $row){
     $user_normalizer->addData($row);
 }
@@ -24,7 +23,7 @@ foreach ($csv_normalizer->getData() as $row){
 // and will be ready to store in database
 $user_normalizer->normalize();
 
-$result = $user_normalizer->getData();
+$result = $user_normalizer->getUsers();
+
 
 print_r($result);
-
