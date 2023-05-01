@@ -2,16 +2,15 @@
 
 namespace Street\App\Normalizers;
 
+use Street\App\Helper;
+use Street\App\Regex\Regex;
+
 /**
  *
  */
 class CsVNormalizer extends BaseNormalizer
 {
 
-    /**
-     * @var string
-     */
-    protected string $separator = "/&|and/";
 
     /**
      * @return void
@@ -29,7 +28,7 @@ class CsVNormalizer extends BaseNormalizer
         $array = [];
         $this->invalid_entries = [];
         foreach ($this->data as $row) {
-            $result = preg_split($this->separator, $row);
+            $result = Helper::splitBy(Regex::MULTIPLE_ENTRY_SEPARATORS, $row);
             if ($this->isValid($result)) $array[] = $result;
             else $this->invalid_entries[] = $result;
         }
@@ -46,21 +45,12 @@ class CsVNormalizer extends BaseNormalizer
             count($result) < 2 &&
             count($result) > 0
         ) {
-            $tmp = $this->splitBySpace($result[0]);
+            $tmp = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $result[0]);
             if ($tmp && count($tmp) > 1) return true;
 
         } else return true;
 
         return false;
-    }
-
-    /**
-     * @param string $result
-     * @return array|bool
-     */
-    public static function splitBySpace(string $result): array|bool
-    {
-        return preg_split('/\s+/', $result);
     }
 
     /**
@@ -73,8 +63,8 @@ class CsVNormalizer extends BaseNormalizer
         $multi = [];
         foreach ($array as $group) {
             if(count($group) > 1){
-                $first = self::splitBySpace(trim($group[0]));
-                $second = self::splitBySpace(trim($group[1]));
+                $first = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $group[0]);
+                $second = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $group[1]);
                 if(count($first) < 2) $first = $first[0].' '.$second[count($second) - 1];
                 if(is_array($first)) $multi[] = $this->flatten($first);
                 else $multi[] = $first;

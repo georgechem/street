@@ -39,7 +39,7 @@ class User
      */
     public function setTitle(string $title): void
     {
-        $this->title = $title;
+        $this->title = trim($title);
     }
 
     /**
@@ -55,7 +55,7 @@ class User
      */
     public function setFirstName(string $first_name): void
     {
-        $this->first_name = $first_name;
+        $this->first_name = trim($first_name);
     }
 
     /**
@@ -71,7 +71,7 @@ class User
      */
     public function setLastName(string $last_name): void
     {
-        $this->last_name = $last_name;
+        $this->last_name = trim($last_name);
     }
 
     /**
@@ -80,7 +80,7 @@ class User
      */
     public function setInitial(string $initial):void
     {
-        $this->initial = $initial;
+        $this->initial = trim($initial);
     }
 
     /**
