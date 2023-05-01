@@ -23,6 +23,8 @@ class CsVNormalizer extends BaseNormalizer
     /**
      * @return void
      */
+    // split multiple entries in one csv row into separate one
+    // other treat unchanged, store also invalid client entries to allow further processing if necessary
     protected function split(): void
     {
         $array = [];
@@ -39,6 +41,7 @@ class CsVNormalizer extends BaseNormalizer
      * @param array $result
      * @return bool
      */
+    // allow max two user entered by client in one row
     protected function isValid(array $result): bool
     {
         if (
@@ -62,36 +65,18 @@ class CsVNormalizer extends BaseNormalizer
         $singular = [];
         $multi = [];
         foreach ($array as $group) {
-            if(count($group) > 1){
+            if (count($group) > 1) {
                 $first = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $group[0]);
                 $second = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $group[1]);
-                if(count($first) < 2) $first = $first[0].' '.$second[count($second) - 1];
-                if(is_array($first)) $multi[] = $this->flatten($first);
+                if (count($first) < 2) $first = $first[0] . ' ' . $second[count($second) - 1];
+                if (is_array($first)) $multi[] = Helper::flatten($first);
                 else $multi[] = $first;
-                $multi[] = $this->flatten($second);
-            }elseif(count($group) > 0){
-                $singular[] = trim($group[0]);
-            }
+                $multi[] = Helper::flatten($second);
+            } elseif (count($group) > 0) $singular[] = trim($group[0]);
         }
         return array_merge($singular, $multi);
 
     }
 
-    /**
-     * @param array $array
-     * @return string
-     */
-    protected function flatten(array $array):string
-    {
-        $result = "";
-        foreach ($array as $value){
-            if(is_array($value)){
-                $result .= $this->flatten($value);
-            }else{
-                $result .= $value . " ";
-            }
-        }
-        return $result;
-    }
 
 }

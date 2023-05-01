@@ -17,9 +17,9 @@ abstract class BaseNormalizer
     protected array $invalid_entries = [];
 
     /**
-     * @return mixed
+     * @return void
      */
-    abstract function normalize();
+    abstract function normalize():void;
 
     /**
      * @param string $data
