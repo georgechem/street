@@ -10,7 +10,7 @@ class Helper
      */
     public static function isRegexMatch(string $pattern,string $input, bool $trim = true): bool
     {
-        if(preg_match('/^[A-Z]\.?$/i', $trim ? trim($input) : $input)) return true;
+        if(preg_match($pattern, $trim ? trim($input) : $input)) return true;
         return false;
     }
 
