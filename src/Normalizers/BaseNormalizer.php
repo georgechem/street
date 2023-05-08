@@ -38,6 +38,11 @@ abstract class BaseNormalizer
         return $this->data;
     }
 
+    public function setData(array $data):void
+    {
+        $this->data = $data;
+    }
+
     /**
      * @return array
      */
