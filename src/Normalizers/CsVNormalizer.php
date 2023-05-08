@@ -34,7 +34,6 @@ class CsVNormalizer extends BaseNormalizer
     protected function split(): array
     {
         $array = [];
-        $this->invalid_entries = [];
         foreach ($this->data as $row) {
             $result = Helper::splitBy(Regex::MULTIPLE_ENTRY_SEPARATORS, $row);
             if ($this->isValid($result)) $array[] = $result;
