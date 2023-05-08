@@ -44,13 +44,6 @@ class Helper
         return $result;
     }
 
-    public static function isArrayLengthInRange(array $array, int $min, int $max):bool
-    {
-        if(count($array) < $max && count($array) > $min) return true;
-        else return false;
-
-    }
-
     public static function isArrayLengthGreaterThan(array $array, int $length):bool
     {
         if(count($array) > $length) return true;
@@ -74,9 +67,14 @@ class Helper
         return count($array) === 0;
     }
 
-    public static function joinStrings(string $args):string
+    public static function joinStrings():string
     {
         $arguments = func_get_args();
+        foreach ($arguments as $arg){
+            if(gettype($arg) !== 'string'){
+                throw new \Error('All arguments in joinStrings() must be strings');
+            }
+        }
         return  implode(' ', $arguments);
     }
 

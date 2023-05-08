@@ -20,35 +20,50 @@ class UserNormalizer extends BaseNormalizer
     /**
      * @return void
      */
-    function normalize(): void
+    public function normalize(): void
     {
-        $this->process();
+        $this->users = $this->process();
     }
 
     /**
      * @return void
      */
-    function process(): void
+    protected function process(): array
     {
-        $this->users = [];
+        $users = [];
         foreach ($this->data as $row){
             $result = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $row);
             $length = count($result);
             // only title and last name which are mandatory and must be present in user entered data
-            $user = new User();
             // title
-            $user->setTitle($result[0]);
+            $title = $result[0];
+            $lastName = null;
+            $initial = null;
+            $firstName = null;
             // surname
-            if($length === 2)$user->setLastName($result[1]);
+            if($length === 2)$lastName = $result[1];
             else{
-                $user->setLastName($result[$length - 1]);
+                $lastName = $result[$length - 1];
                 // initial or first name
-                if(Helper::isRegexMatch(Regex::INITIAL_REGEX, $result[1])) $user->setInitial($result[1]);
-                else $user->setFirstName($result[1]);
+                if(Helper::isRegexMatch(Regex::INITIAL_REGEX, $result[1])) $initial = $result[1];
+                else $firstName = $result[1];
             }
-            $this->users[] = $user;
+
+            $users[] = $this->createUser($title, $lastName, $initial, $firstName);
         }
+        return $users;
     }
+
+    protected function createUser(string $title, string $lastName, string|null $initial, string|null $firstName): User
+    {
+        $user = new User();
+        $user->setTitle($title);
+        $user->setLastName($lastName);
+        if($initial) $user->setInitial($initial);
+        if($firstName) $user->setFirstName($firstName);
+        return $user;
+    }
+
 
     /**
      * @return array

@@ -12,13 +12,18 @@ use Street\App\Regex\Regex;
 class CsVNormalizer extends BaseNormalizer
 {
 
+    const ONE_PERSON_IN_THE_ROW = 1;
+    const TWO_PEOPLE_IN_THE_ROW = 2;
 
+    protected array $singular = [];
+    protected array $multi = [];
     /**
      * @return void
      */
     function normalize(): void
     {
-        $this->split();
+        $array = $this->split();
+        $this->data = $this->process($array);
     }
 
     /**
@@ -26,7 +31,7 @@ class CsVNormalizer extends BaseNormalizer
      */
     // split multiple entries in one csv row into separate one
     // other treat unchanged, store also invalid client entries to allow further processing if necessary
-    protected function split(): void
+    protected function split(): array
     {
         $array = [];
         $this->invalid_entries = [];
@@ -35,7 +40,7 @@ class CsVNormalizer extends BaseNormalizer
             if ($this->isValid($result)) $array[] = $result;
             else $this->invalid_entries[] = $result;
         }
-        $this->data = $this->process($array);
+        return $array;
     }
 
     /**
@@ -45,12 +50,14 @@ class CsVNormalizer extends BaseNormalizer
     // allow max two user entered by client in one row
     protected function isValid(array $result): bool
     {
-        if (Helper::isArrayLengthInRange($result, 0, 2)) {
+        // is valid single entry row
+        if (count($result) === self::ONE_PERSON_IN_THE_ROW) {
             $tmp = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $result[0]);
+            // in single row record must be at least initial & surname so length must be greater than one
             if ($tmp && Helper::isArrayLengthGreaterThan($tmp, 1)) return true;
-
-        } else return true;
-
+            // multi(2) entry row
+        } else if(count($result) === self::TWO_PEOPLE_IN_THE_ROW) return true;
+        // can allow more people in one line in the future / may use strategy pattern which set current number of users in the row
         return false;
     }
 
@@ -60,16 +67,14 @@ class CsVNormalizer extends BaseNormalizer
      */
     protected function process(array $array): array
     {
-        $singular = [];
-        $multi = [];
         foreach ($array as $group) {
-           $this->processGroup($group, $singular, $multi);
+           $this->processGroup($group);
         }
-        return array_merge($singular, $multi);
+        return array_merge($this->singular, $this->multi);
 
     }
 
-    protected function processGroup(array $group, array &$singular, array &$multi):void
+    protected function processGroup(array $group):void
     {
         if (Helper::isArrayLengthGreaterThan($group, 1)) {
 
@@ -82,11 +87,11 @@ class CsVNormalizer extends BaseNormalizer
                 Helper::isArrayLengthLowerThan($first, 2)
             ) $first = Helper::joinStrings($first[0], $second[Helper::getLastIndexInArray($second)]);
 
-            if (is_array($first) && !Helper::isArrayEmpty($first)) $multi[] = Helper::flatten($first);
-            else $multi[] = $first;
-            if(is_array($second) && !Helper::isArrayEmpty($second))$multi[] = Helper::flatten($second);
+            if (is_array($first) && !Helper::isArrayEmpty($first)) $this->multi[] = Helper::flatten($first);
+            else $this->multi[] = $first;
+            if(is_array($second) && !Helper::isArrayEmpty($second))$this->multi[] = Helper::flatten($second);
 
-        } elseif (Helper::isArrayLengthGreaterThan($group, 0)) $singular[] = trim($group[0]);
+        } elseif (Helper::isArrayLengthGreaterThan($group, 0)) $this->singular[] = trim($group[0]);
     }
 
 
