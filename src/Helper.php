@@ -44,5 +44,42 @@ class Helper
         return $result;
     }
 
+    public static function isArrayLengthInRange(array $array, int $min, int $max):bool
+    {
+        if(count($array) < $max && count($array) > $min) return true;
+        else return false;
+
+    }
+
+    public static function isArrayLengthGreaterThan(array $array, int $length):bool
+    {
+        if(count($array) > $length) return true;
+        else return false;
+    }
+
+    public static function isArrayLengthLowerThan(array $array, int $length):bool
+    {
+        if(count($array) < $length) return true;
+        else return false;
+    }
+
+    public static function getLastIndexInArray(array $array):int
+    {
+        return count($array) - 1;
+
+    }
+
+    public static function isArrayEmpty(array $array):bool
+    {
+        return count($array) === 0;
+    }
+
+    public static function joinStrings(string $args):string
+    {
+        $arguments = func_get_args();
+        return  implode(' ', $arguments);
+    }
+
+
 
 }

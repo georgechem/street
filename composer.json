@@ -5,12 +5,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Street\\App\\": "src/"
+            "Street\\App\\": "src/",
+            "Street\\Tests\\": "tests/"
         }
     },
     "scripts": {
         "start": "php ./src/index.php",
-        "test": "./vendor/bin/phpunit tests"
+        "test": "./vendor/bin/phpunit"
     },
     "authors": [
         {

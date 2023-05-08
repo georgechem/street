@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Street\App\File\CsvFileIterator;
 use Street\App\Normalizers\CsVNormalizer;
