@@ -7,11 +7,9 @@ class TwoPeopleRowNormalizer implements RowNormalizer
 
     private array $data;
 
-    public function normalize():array
+    public function normalize():array|null
     {
-        print_r($this->data);
-        print_r('Two People');
-        return [];
+        return $this->data;
     }
 
     public function setData(array $data): void

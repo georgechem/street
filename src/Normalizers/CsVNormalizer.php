@@ -45,15 +45,6 @@ class CsVNormalizer extends BaseNormalizer
         $this->rowNormalizer = $rowNormalizer;
     }
 
-    public function runNormalizer(): void
-    {
-        if($this->rowNormalizer){
-            $this->rowNormalizer->normalize();
-        }else{
-            throw new \Exception('Normalizer must be set before execution');
-        }
-    }
-
     /**
      * @return void
      */
@@ -69,31 +60,14 @@ class CsVNormalizer extends BaseNormalizer
 
                 $this->setRowNormalizer($this->normalizers[count($result)]);
                 $this->rowNormalizer->setData($result);
-                $array[] = $this->rowNormalizer->normalize();
+                $normalizedRow = $this->rowNormalizer->normalize();
+                if($normalizedRow) $array[] = $normalizedRow;
+
             }
             else $this->invalid_entries[] = $result;
-//            if ($this->isValid($result)) $array[] = $result;
 
         }
         return $array;
-    }
-
-    /**
-     * @param array $result
-     * @return bool
-     */
-    // allow max two user entered by client in one row
-    protected function isValid(array $result): bool
-    {
-        // is valid single entry row
-        if (count($result) === self::ONE_PERSON_IN_THE_ROW) {
-            $tmp = Helper::splitBy(Regex::ONE_SPACE_OR_MORE, $result[0]);
-            // in single row record must be at least initial & surname so length must be greater than one
-            if ($tmp && Helper::isArrayLengthGreaterThan($tmp, 1)) return true;
-            // multi(2) entry row
-        } else if(count($result) === self::TWO_PEOPLE_IN_THE_ROW) return true;
-        // can allow more people in one line in the future / may use strategy pattern which set current number of users in the row
-        return false;
     }
 
     /**

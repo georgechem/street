@@ -26,4 +26,4 @@ $user_normalizer->normalize();
 $result = $user_normalizer->getUsers();
 
 
-//print_r($result);
+print_r($result);
