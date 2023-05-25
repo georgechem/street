@@ -5,6 +5,9 @@ namespace Street\App\Normalizers;
 use Street\App\Const\Group;
 use Street\App\Helper;
 use Street\App\Regex\Regex;
+use Street\App\Strategy\CsvNormalizerStrategy\OnePersonRowNormalizer;
+use Street\App\Strategy\CsvNormalizerStrategy\RowNormalizer;
+use Street\App\Strategy\CsvNormalizerStrategy\TwoPeopleRowNormalizer;
 
 /**
  *
@@ -14,9 +17,20 @@ class CsVNormalizer extends BaseNormalizer
 
     const ONE_PERSON_IN_THE_ROW = 1;
     const TWO_PEOPLE_IN_THE_ROW = 2;
-
     protected array $singular = [];
     protected array $multi = [];
+
+    protected array $normalizers = [];
+
+    public function __construct()
+    {
+        $this->normalizers = [
+            1 => new OnePersonRowNormalizer(),
+            2 => new TwoPeopleRowNormalizer()
+        ];
+    }
+
+    protected ?RowNormalizer $rowNormalizer = null;
     /**
      * @return void
      */
@@ -24,6 +38,20 @@ class CsVNormalizer extends BaseNormalizer
     {
         $array = $this->split();
         $this->data = $this->process($array);
+    }
+
+    protected function setRowNormalizer(RowNormalizer $rowNormalizer):void
+    {
+        $this->rowNormalizer = $rowNormalizer;
+    }
+
+    public function runNormalizer(): void
+    {
+        if($this->rowNormalizer){
+            $this->rowNormalizer->normalize();
+        }else{
+            throw new \Exception('Normalizer must be set before execution');
+        }
     }
 
     /**
@@ -36,8 +64,16 @@ class CsVNormalizer extends BaseNormalizer
         $array = [];
         foreach ($this->data as $row) {
             $result = Helper::splitBy(Regex::MULTIPLE_ENTRY_SEPARATORS, $row);
-            if ($this->isValid($result)) $array[] = $result;
+            // set proper normalizer for a row basing on result array
+            if(count($result) <= count($this->normalizers) && count($result) > 0) {
+
+                $this->setRowNormalizer($this->normalizers[count($result)]);
+                $this->rowNormalizer->setData($result);
+                $array[] = $this->rowNormalizer->normalize();
+            }
             else $this->invalid_entries[] = $result;
+//            if ($this->isValid($result)) $array[] = $result;
+
         }
         return $array;
     }
